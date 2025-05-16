@@ -1,0 +1,76 @@
+# syntax = devthefuture/dockerfile-x
+FROM ./vm_like_docker/dockerfile
+
+# Graphics
+ENV PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    PYOPENGL_PLATFORM=egl \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,video,graphics,utility
+
+
+ENV HISTSIZE=10000 \
+    HISTFILESIZE=10000
+# Install software properties and add Python 3.10 PPA
+RUN apt update && apt install -y \
+    python3 python3-pip \
+    ffmpeg \
+    # python3-distutils \
+    python-is-python3 \
+    # wget \
+    # unzip git curl \
+    && apt clean \
+    rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip, setuptools, and wheel (but keep setuptools < 60)
+RUN python3.10 -m pip install --upgrade pip setuptools wheel
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+COPY app.py .
+
+EXPOSE 8501
+ENTRYPOINT ["streamlit", \
+            "run", \
+            "app.py", \
+            "--server.port=8501", \
+            "--server.headless=true" \
+            ]
+
+
+# RUN git clone https://github.com/upatras-lar/CameraHMR_IBRICS_fork.git
+
+# WORKDIR /env/CameraHMR_IBRICS_fork
+
+# RUN pip install -r requirements.txt
+
+# RUN apt update && apt install -y \
+#     ffmpeg libgl1-mesa-glx libglib2.0-0 \
+#     libegl1-mesa libgles2-mesa \
+#     libxext6 libxrender1 \
+#     libsm6 mesa-utils \
+#     && apt clean
+
+
+# ENV DEBIAN_FRONTEND=noninteractive
+# ENV TZ=Europe/Athens
+
+# RUN printf 'tzdata tzdata/Areas select Europe\n' | debconf-set-selections && \
+#     printf 'tzdata tzdata/Zones/Europe select Athens\n' | debconf-set-selections
+
+# RUN apt-get update && \
+#     DEBIAN_FRONTEND=noninteractive TZ=${TZ} \
+#       apt-get install -y --no-install-recommends tzdata && \
+#     rm -rf /var/lib/apt/lists/*
+
+# RUN apt update \
+#     && apt install -y --no-install-recommends \
+#     wget \
+#     expect \ 
+#     # ca-certificates \
+#     && rm -rf /var/lib/apt/lists/*
+
+# Expose display ports for GUI-based apps (if needed)
+# ENV DISPLAY=:0
+# ENV QT_X11_NO_MITSHM=1

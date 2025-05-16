@@ -1,0 +1,4 @@
+[submodule "vm_like_docker"]
+	path = vm_like_docker
+	url = git@github.com:anhurion/vm_like_docker.git
+	branch = root-only-version
