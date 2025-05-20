@@ -54,9 +54,8 @@ if [ "$TEST_MODE" = true ] && [ "$IT_MODE" = true ]; then
   docker run ${COMMON_FLAGS} \
     -v "$(pwd)":/env/testing:rw \
     -it --entrypoint /bin/zsh \
-    hmr_aris:v4_auto \
+    kineseg_aris:v2_weights \
     -c "\
-    cp -r /env/CameraHMR_IBRICS_fork/data /env/testing/data && \
     cd /env/testing && \
     exec /bin/zsh"
 

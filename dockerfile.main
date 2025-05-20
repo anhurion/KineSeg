@@ -17,18 +17,25 @@ RUN apt update && apt install -y \
     ffmpeg \
     # python3-distutils \
     python-is-python3 \
-    # wget \
+    wget \
     # unzip git curl \
     && apt clean \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip, setuptools, and wheel (but keep setuptools < 60)
 RUN python3.10 -m pip install --upgrade pip setuptools wheel
 
+# make a dir and download checkpoint
+RUN mkdir -p /app/checkpoints && \
+    wget --progress=dot:giga \
+         https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth \
+         -O /app/checkpoints/sam_vit_h_4b8939.pth
+
 WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
-COPY app.py .
+COPY kineseg.py .
+
 
 EXPOSE 8501
 ENTRYPOINT ["streamlit", \
